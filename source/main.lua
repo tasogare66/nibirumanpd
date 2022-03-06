@@ -58,7 +58,7 @@ function dbg_key(k)
   --return key(k)
 end
 function btn_dec()
-  return btnp(4)
+  return playdate.buttonJustReleased(playdate.kButtonA)
 end
 function randomf(l,r)
   return l+random()*(r-l)
@@ -2550,7 +2550,7 @@ mode_game.draw1 = function(self)
     rect(0,y-merg,SCR_WIDTH,5+merg*2,2)
     local str="SAVE THE LAST HUMANS"
     local x=self.enttm
-    self.entstrx=print(str,x,y,11)
+    self.entstrx=print_txt(str,x,y,11)
   elseif self.state==self.State_Over then
     local r=self.ovelp//(FRAME2SEC*26)
     if r%2==0 then
@@ -2697,21 +2697,14 @@ CURSOR=0
 MODEM:request(mode_title.new())
 
 _DEBUG,_MUTE,dbg_pause=false,false,false
-prev_time=time()/1000
+prev_time=time_seconds()
 frame_time_sum=0
 frame_times={}
 FPS=0
 
 function playdate.update()
-  -- posX += 2
-  -- posY += 1
-  -- gfx.fillRect(posX, posY, 10, 10)
-
-  -- gfx.sprite.update()
-  -- playdate.drawFPS(0,0)
-
   -- calc fps
-  local ct=time()/1000
+  local ct=time_seconds()
   local dt=ct-prev_time
   prev_time=ct
   frame_times[#frame_times+1]=dt
