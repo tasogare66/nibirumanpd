@@ -2,15 +2,11 @@ local gfx <const> = playdate.graphics
 local snd <const> = playdate.sound
 
 function btn(id)
-  return false --FIXME
-end
-
-function btnp(id)
-  return false --FIXME
+  return playdate.buttonIsPressed(id)
 end
 
 function circb(x,y,radius,color)
-  --FIXME
+  playdate.graphics.drawCircleAtPoint(x,y,radius)
 end
 
 function key(code)

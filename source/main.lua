@@ -53,6 +53,7 @@ end
 KEY={B=2,H=8,K=11,O=15,P=16,
   W=23,A=1,S=19,D=4,
 }
+BTN={UP=playdate.kButtonUp,DOWN=playdate.kButtonDown,LEFT=playdate.kButtonLeft,RIGHT=playdate.kButtonRight,A=playdate.kButtonA,B=playdate.kButtonB}
 function dbg_key(k)
   return _DEBUG and key(k) or false
   --return key(k)
@@ -695,13 +696,13 @@ function IData.new()
 end
 function IData:upd(dt)
   local m=0
-  if btn(0) or key(KEY.W) then m=m|Button_Up end
-  if btn(1) or key(KEY.S) then m=m|Button_Down end
-  if btn(2) or key(KEY.A) then m=m|Button_Left end
-  if btn(3) or key(KEY.D) then m=m|Button_Right end
+  if btn(BTN.UP) or key(KEY.W) then m=m|Button_Up end
+  if btn(BTN.DOWN) or key(KEY.S) then m=m|Button_Down end
+  if btn(BTN.LEFT) or key(KEY.A) then m=m|Button_Left end
+  if btn(BTN.RIGHT) or key(KEY.D) then m=m|Button_Right end
   local mx,my,ml,_,mr=mouse()
-  if btn(4) or ml then m=m|Button_Shot end
-  if btn(5) or mr then m=m|Button_Dash end
+  if btn(BTN.A) or ml then m=m|Button_Shot end
+  if btn(BTN.B) or mr then m=m|Button_Dash end
   local mpos=Vec2.new(mx,my)
   self.mask=m
   self.mpos=mpos
@@ -2644,8 +2645,8 @@ function mode_title:ctrl(dt)
   elseif btn_dec() then
     self.decide_type=CURSOR==0 and Input.StateLog or Input.StateTrace
     self:setdec()
-  elseif btn(0) then CURSOR=0
-  elseif btn(1) and Input:exists_log() then CURSOR=1
+  elseif btn(BTN.UP) then CURSOR=0
+  elseif btn(BTN.DOWN) and Input:exists_log() then CURSOR=1
   end
   return true
 end
