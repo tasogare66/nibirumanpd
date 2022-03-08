@@ -1442,7 +1442,7 @@ function ForceD:init()
 end
 function ForceD:upd(dt)
   local lt=0.3
-  self.spr=self.base_spr+min((self.elp/0.3)*3,2)
+  self.spr=self.base_spr+min((self.elp//0.3)*3,2)
   self.elp=self.elp+dt
   if self.elp>=lt then
     self:del()
@@ -1464,7 +1464,7 @@ function Enemy:init()
 end
 function Enemy:upd(dt)
   if self.appear_flag then
-    self.spr=464 + (self.elapsed/0.166)%4
+    self.spr=464 + (self.elapsed//0.166)%4
     if self.elapsed >= 2 then
       self:appear()
       self.appear_flag=false
@@ -1828,6 +1828,7 @@ EneDot.init=function(self)
   self.timer=6
   self.captured=false
   self.captime=0
+  self.spr=self.ene_spr
   ObjLstA:insert_ene_dot(self)
 end
 EneDot.upd=function(self,dt)
@@ -1840,7 +1841,7 @@ EneDot.upd=function(self,dt)
     self:del()
     return
   end
-  self.spr=self.ene_spr+(self.timer/0.333)%2
+  self.spr=self.ene_spr+(self.timer//0.333)%2
   self.timer=self.timer-dt
 end
 function EneDot:hitcb(dist)

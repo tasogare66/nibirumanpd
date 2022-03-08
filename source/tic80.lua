@@ -43,8 +43,11 @@ function sfx(id,note,duration,channel)
   sample[id]:play()
 end
 
+local img = gfx.image.new('sprites')
 function spr(id,x,y,colorkey,scale,flip,rotate,w,h)
-  --FIXME
+  local row = id % 16;
+  local col = id // 16;
+  img:draw(x,y,playdate.graphics.kImageUnflipped,row*8,col*8,8,8)
 end
 
 function textri(x1,y1,x2,y2,x3,y3,u1,v1,u2,v2,u3,v3,use_map,trans)
