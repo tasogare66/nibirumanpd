@@ -13,6 +13,10 @@ function key(code)
   return false --FIXME
 end
 
+function line(x0,y0,x1,y1,color)
+  playdate.graphics.drawLine(x0,y0,x1,y1)
+end
+
 function map(x,y,w,h,sx,sy)
   --FIXME
 end
@@ -30,7 +34,7 @@ function print_txt(x,y,col,fixed,scale)
 end
 
 function rect(x,y,width,height,color)
-  --FIXME
+  gfx.fillRect(x, y, width, height)
 end
 
 --setup sounds

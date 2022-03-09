@@ -694,16 +694,19 @@ function IData.new()
   setmetatable(d,{__index=IData})
   return d
 end
+function instead_of_mouse()
+  local rad=(playdate.getCrankPosition()-90)*DEG2RAD
+  return cos(rad),sin(rad)
+end
 function IData:upd(dt)
   local m=0
   if btn(BTN.UP) or key(KEY.W) then m=m|Button_Up end
   if btn(BTN.DOWN) or key(KEY.S) then m=m|Button_Down end
   if btn(BTN.LEFT) or key(KEY.A) then m=m|Button_Left end
   if btn(BTN.RIGHT) or key(KEY.D) then m=m|Button_Right end
-  local mx,my,ml,_,mr=mouse()
-  if btn(BTN.A) or ml then m=m|Button_Shot end
-  if btn(BTN.B) or mr then m=m|Button_Dash end
-  local mpos=Vec2.new(mx,my)
+  m=m|Button_Shot --auto --if btn(BTN.A) or ml then m=m|Button_Shot end
+  if btn(BTN.A) or btn(BTN.B) then m=m|Button_Dash end
+  local mpos=Vec2.new(instead_of_mouse())
   self.mask=m
   self.mpos=mpos
   self.dt=dt
@@ -793,6 +796,9 @@ end
 function Input:mouse()
   return self.cur.mpos
 end
+function Input:crank()
+  return self.cur.mpos
+end
 function Input:log_num()
   return #self.logs
 end
@@ -811,10 +817,10 @@ Camera={
 function Camera:upd(t)
   local p=t.pos
   local cam=self
-  cam.inr_center.x=clamp(lerp(cam.inr_center.x,p.x,0.2),-80,80)
-  cam.inr_center.y=clamp(lerp(cam.inr_center.y,p.y,0.2),-140,130)
+  cam.inr_center.x=clamp(lerp(cam.inr_center.x,p.x,0.2),-100,100)
+  cam.inr_center.y=clamp(lerp(cam.inr_center.y,p.y,0.2),-140,140)
   cam.center = cam.inr_center + self:upd_shake()
-  cam.top_left=cam.center-Vec2.new(120,64)
+  cam.top_left=cam.center-Vec2.new(SCR_WIDTH/2,SCR_HEIGHT/2)
   cam.trs=-cam.top_left
 end
 function Camera:upd_shake()
@@ -1162,7 +1168,6 @@ end
 
 -- player
 Player={ 
-  reticle=nil,
   base_flag=Flag_px|Flag_player|Flag_Invincible,
   shot_repeat=0,
   invincible_time=0,
@@ -1248,7 +1253,7 @@ Player.upd=function(self,dt)
   self.animcnt=(self.elp//(FRAME2SEC*10)%4)
   self.elp=self.elp+dt
   if not self.active then return end
-  local chara_dir=self.reticle.pos-self.pos
+  local chara_dir=Input:crank()
   self.animdir=(chara_dir.x>0) and 0 or 1
   self.animdir=self.animdir|((chara_dir.y<0) and 2 or 0)
   if self:check_dead() then return end
@@ -1271,14 +1276,14 @@ Player.upd=function(self,dt)
       if self.coolt<=0 then psfx(9,40,3) end 
     else
       if dashon then
-        local v=self.reticle.pos-self.pos
-        local len=v:Magnitude()
+        local dv=v:Clone()
+        local len=dv:Magnitude()
         if(len>EPSILON)then
-          v:Div(len)
+          dv:Div(len)
           Camera:req_shake(0.2)
-          self:set_vel_force(v*6.8)
-          self.dashvec=v
-          self.dashvec_old=v
+          self:set_vel_force(dv*6.8)
+          self.dashvec=dv
+          self.dashvec_old=dv
           self.dasht=self.dash_limit
           self.dashst=1
         end
@@ -1328,7 +1333,7 @@ Player.upd=function(self,dt)
   --shot
   if Input:on(Button_Shot) and not self:is_dashing() then
     if self.shot_repeat == 0 then
-      local v=self.reticle.pos-self.pos
+      local v=Input:crank()
       local d=v:Magnitude()
       if d > EPSILON then
         ObjLstA:add(self.pos.x,self.pos.y,PlBullet,{dir=v:Div(d)})
@@ -1395,13 +1400,6 @@ end
 function PlBullet:drw(cam)
   local p=self.pos+cam
   rspr(p.x,p.y,1,self.ang,0,31,1,1)
-end
--- reticle
-Reticle={}
-setmetatable(Reticle,{__index=Entity})
-Reticle.spr=480
-Reticle.upd=function(self,dt)
-  self.pos = Input:mouse()+Camera.top_left
 end
 -- force
 ForceF={elp=0,base_flag=Flag_Force}
@@ -2481,9 +2479,7 @@ mode_game.init = function(self)
   Input:start(self.req_state)
   self.spawner:init()
   --obj
-  local ro=ObjLstA:add(100,100,Reticle)
   local po=ObjLstA:add(0,0,Player)
-  po.reticle=ro
   self.pl=po
   if _DEBUG then
     self.life=999
@@ -2740,4 +2736,5 @@ function playdate.update()
   ObjLstA:draw(Camera.trs)
   MODEM:draw1()
   if _DEBUG then print_txt(string.format("%6.3f",FPS), 0, 0) end
+  playdate.drawFPS(0,0) --DEBUG
 end
