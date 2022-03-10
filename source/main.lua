@@ -969,6 +969,7 @@ function PtclLst:count()
   return #self.lst+#SqpLst.lst
 end
 
+--[[
 function rspr(sx,sy,scale,angle,mx,my,mw,mh)
   --this is fixed , to make a textured quad
   --X , Y , U , V
@@ -1001,6 +1002,7 @@ function rspr(sx,sy,scale,angle,mx,my,mw,mh)
   textri( sv[2][1],sv[2][2], sv[3][1],sv[3][2], sv[4][1],sv[4][2],
           sv[2][3],sv[2][4], sv[3][3],sv[3][4], sv[4][3],sv[4][4], false,0)
 end
+--]]
 
 -- eintity
 Flag_del=1<<0
